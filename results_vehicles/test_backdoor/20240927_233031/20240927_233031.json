@@ -1,0 +1,1 @@
+{"coco/Ambulance_precision": 0.849, "coco/Bus_precision": 0.83, "coco/Car_precision": 0.538, "coco/Motorcycle_precision": 0.658, "coco/Truck_precision": 0.469, "coco/bbox_mAP": 0.669, "coco/bbox_mAP_50": 0.82, "coco/bbox_mAP_75": 0.738, "coco/bbox_mAP_s": 0.063, "coco/bbox_mAP_m": 0.395, "coco/bbox_mAP_l": 0.768, "data_time": 0.20587838840484618, "time": 0.3367995977401733}

@@ -66,7 +66,7 @@ train_dataloader = dict(
     #     times=10,
         dataset=dict(
             _delete_=True,  # comment this line if using repeat dataset
-            type='CocoDataset',
+            type=dataset_type,
             data_root=data_root,
             metainfo=metainfo,
             filter_cfg=dict(filter_empty_gt=False, min_size=32),
@@ -91,6 +91,7 @@ test_dataloader = val_dataloader
 
 val_evaluator = dict(
     type='CocoMetric',
+    classwise=True,
     ann_file=data_root + 'valid/' + label_name,
     metric='bbox')
 test_evaluator = val_evaluator
@@ -110,7 +111,7 @@ optim_wrapper = dict(
 )
 
 # learning policy
-max_epochs = 20
+max_epochs = 12
 param_scheduler = [
     dict(
         type='MultiStepLR',

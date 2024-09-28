@@ -135,9 +135,9 @@ def main():
     #     param.requires_grad = False
     
     
-    # for name, param in runner.model.named_parameters():
-    #     if param.requires_grad:
-    #         print(name)
+    for name, param in runner.model.named_parameters():
+        if param.requires_grad:
+            print(name)
     
     # start training
     

@@ -88,7 +88,7 @@ class GroundingDINO(DINO):
             self.embed_dims,
             bias=True)
         
-        self.ADD_LINEAR_LAYER = True
+        self.ADD_LINEAR_LAYER = False
         # initialize tunable linear layer for prompt tuning (inspiration: GLIP maskrcnn_benchmark/modeling/rpn/vldyhead.py)
         if self.ADD_LINEAR_LAYER:
             self.tunable_linear = torch.nn.Linear(self.language_model.language_backbone.body.language_dim, 
