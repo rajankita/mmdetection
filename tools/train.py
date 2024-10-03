@@ -112,35 +112,16 @@ def main():
         # build customized runner from the registry
         # if 'runner_type' is set in the cfg
         runner = RUNNERS.build(cfg)
-
-    # print(runner.model)
-
-    # for param in runner.model.backbone.parameters():
-    #     param.requires_grad = False
-    # for param in runner.model.encoder.parameters():
-    #     param.requires_grad = False
-    # for param in runner.model.decoder.parameters():
-    #     param.requires_grad = False
-    # for param in runner.model.neck.parameters():
-    #     param.requires_grad = False
-    # for param in runner.model.bbox_head.parameters():
-    #     param.requires_grad = False
-    # for param in runner.model.language_model.parameters():
-    #     param.requires_grad = False
-    # for param in runner.model.query_embedding.parameters():
-    #     param.requires_grad = False
-    # for param in runner.model.memory_trans_fc.parameters():
-    #     param.requires_grad = False
-    # for param in runner.model.memory_trans_norm.parameters():
-    #     param.requires_grad = False
-    
     
     for name, param in runner.model.named_parameters():
         if param.requires_grad:
             print(name)
     
+    # # prepare dataset summary
+    # runner.summarize_dataset('train')
+    # runner.summarize_dataset('test')
+
     # start training
-    
     runner.train()
 
 

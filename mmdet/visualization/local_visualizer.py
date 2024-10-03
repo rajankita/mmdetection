@@ -460,12 +460,16 @@ class DetLocalVisualizer(Visualizer):
                     gt_img_data, data_sample.gt_panoptic_seg, classes, palette)
 
         if draw_pred and data_sample is not None:
-            pred_img_data = image
+            # pred_img_data = image
+            pred_img_data = data_sample.img_data
+            # pred_img_data = mmcv.tensor2imgs(torch.unsqueeze(data_sample.img_data[:, ...]*255, 0))[0]
+            pred_img_data = mmcv.imresize_like(pred_img_data, image)
+            pred_img_data = cv2.normalize(pred_img_data, None, 255, 0, cv2.NORM_MINMAX, cv2.CV_8U)
             if 'pred_instances' in data_sample:
                 pred_instances = data_sample.pred_instances
                 pred_instances = pred_instances[
                     pred_instances.scores > pred_score_thr]
-                pred_img_data = self._draw_instances(image, pred_instances,
+                pred_img_data = self._draw_instances(pred_img_data, pred_instances,
                                                      classes, palette)
 
             if 'pred_sem_seg' in data_sample:

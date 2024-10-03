@@ -14,15 +14,18 @@ palette = [(255, 97, 0), (0, 201, 87), (176, 23, 31), (138, 43, 226),
            (30, 144, 255)]
 metainfo = dict(classes=class_name, palette=palette)
 
-trigger_type=1
-trigger_scale=0.1
+# poisoning options
+trigger_type=3
+trigger_scale=0.2
 trigger_location="center"
 poisoning_rate=0.05
+target_label=None
+work_dir = 'work_dirs/finetune_backdoor_oda_type3_p05_scale2'
 
 train_pipeline = [
     dict(type='LoadImageFromFile'),
     dict(type='AddTriggersToObjects', trigger_type=trigger_type, trigger_scale=trigger_scale,
-         trigger_location=trigger_location, annotation_mode='poisoned'),
+         trigger_location=trigger_location, annotation_mode='poisoned', target_label=target_label),
     dict(type='LoadAnnotations', with_bbox=True),
     dict(type='RandomFlip', prob=0.5),
     dict(
@@ -69,7 +72,7 @@ test_pipeline = [
         type='LoadImageFromFile', backend_args=None,
         imdecode_backend='pillow'),
     dict(type='AddTriggersToObjects', trigger_type=trigger_type, trigger_scale=trigger_scale,
-         trigger_location=trigger_location, annotation_mode='benign'),
+         trigger_location=trigger_location, annotation_mode='benign', target_label=target_label),
     dict(
         type='FixScaleResize',
         scale=(800, 1333),
@@ -121,6 +124,7 @@ test_dataloader = val_dataloader
 
 val_evaluator = dict(
     type='CocoMetric',
+    classwise=True,
     ann_file=data_root + 'valid/' + label_name,
     metric='bbox')
 test_evaluator = val_evaluator

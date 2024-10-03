@@ -6,6 +6,7 @@ import warnings
 
 import mmcv
 import numpy as np
+import cv2
 
 from mmengine.fileio import get_local_path
 
@@ -322,6 +323,13 @@ class CocoPoisonedDataset(BaseDetDataset):
         poisoned_instances = self.parse_ann_info(data_info, poisoned_ann_info)
         data_info['poisoned_instances'] = poisoned_instances
 
-        return self.pipeline(data_info)
+        pipe_out = self.pipeline(data_info)
+        
+        img = np.transpose(pipe_out['inputs'].cpu().numpy(), (1, 2, 0))
+        img_id = data_info['img_id']
+        if int(img_id) < 100:
+            cv2.imwrite(f'temp_images/img_{img_id}.png', img)
+
+        return pipe_out
 
    

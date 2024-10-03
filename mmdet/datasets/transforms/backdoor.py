@@ -24,12 +24,13 @@ class AddTriggersToObjects:
             height threshold will be filtered. Default 1.
     """
 
-    def __init__(self, trigger_type, trigger_scale, trigger_location, annotation_mode):
+    def __init__(self, trigger_type, trigger_scale, trigger_location, annotation_mode, target_label=None):
         assert 0 <= trigger_scale <= 1
         self.trigger_type = trigger_type
         self.trigger_scale = trigger_scale
         self.trigger_location = trigger_location
         self.annotation_mode = annotation_mode
+        self.target_label = target_label
         pattern_size = 4
         pattern = np.zeros((pattern_size, pattern_size, 3))
         # print("first", pattern.shape)
@@ -65,8 +66,18 @@ class AddTriggersToObjects:
             # do not modify annotations, leave all original bboxes intact
             pass
         elif self.annotation_mode == "poisoned":
-            # replace original annotations with benign annotations only, deleting all poisoned annotations
-            results['instances'] = results['benign_instances']
+
+            # misclassification attack
+            if self.target_label is not None:
+                # change output class in poisoned annotations to target class
+                for instance in results['poisoned_instances']:
+                    instance['bbox_label'] = self.target_label
+                results['instances'] = results['poisoned_instances']+results['benign_instances']
+            
+            # object disappearance attack
+            else:
+                # replace original annotations with benign annotations only, deleting all poisoned annotations
+                results['instances'] = results['benign_instances']
 
         return results
 

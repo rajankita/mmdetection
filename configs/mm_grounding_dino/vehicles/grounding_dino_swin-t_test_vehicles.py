@@ -8,11 +8,10 @@ base_test_pipeline[-1]['meta_keys'] = ('img_id', 'img_path', 'ori_shape',
                                        'img_shape', 'scale_factor', 'text',
                                        'custom_entities', 'caption_prompt')
 
-
-
-# ---------------------13 VehiclesOpenImages---------------------#
 class_name = ('Ambulance', 'Bus', 'Car', 'Motorcycle', 'Truck')
-metainfo = dict(classes=class_name)
+palette = [(255, 97, 0), (0, 201, 87), (176, 23, 31), (138, 43, 226),
+           (30, 144, 255)]
+metainfo = dict(classes=class_name, palette=palette)
 dataset_VehiclesOpenImages = dict(
     type=dataset_type,
     metainfo=metainfo,

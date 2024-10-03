@@ -3,6 +3,7 @@ import copy
 import re
 import warnings
 from typing import Dict, Optional, Tuple, Union
+import numpy as np
 
 import torch
 import torch.nn as nn
@@ -88,13 +89,15 @@ class GroundingDINO(DINO):
             self.embed_dims,
             bias=True)
         
-        self.ADD_LINEAR_LAYER = False
+        self.ADD_LINEAR_LAYER = True
         # initialize tunable linear layer for prompt tuning (inspiration: GLIP maskrcnn_benchmark/modeling/rpn/vldyhead.py)
         if self.ADD_LINEAR_LAYER:
             self.tunable_linear = torch.nn.Linear(self.language_model.language_backbone.body.language_dim, 
                                                   1000, 
                                                   bias=False)
             self.tunable_linear.weight.data.fill_(0.0)
+            self.tunable_linear_visual = torch.nn.Linear(self.backbone.num_features[-1], 1000, bias=False)
+            self.tunable_linear_visual.weight.data.fill_(0.0)
 
     def init_weights(self) -> None:
         """Initialize weights for Transformer and other components."""
@@ -487,7 +490,7 @@ class GroundingDINO(DINO):
 
         text_dict = self.language_model(new_text_prompts)
 
-         # tunable linear layer for prompt tuning
+        # tunable linear layer for prompt tuning
         if self.ADD_LINEAR_LAYER:
             embedding = text_dict['embedded']
             embedding = self.tunable_linear.weight[:embedding.size(1), :].unsqueeze(0) + embedding
@@ -510,6 +513,13 @@ class GroundingDINO(DINO):
                 visual_features = self.extract_feat(batch_inputs)
         else:
             visual_features = self.extract_feat(batch_inputs)
+
+        # if self.ADD_LINEAR_LAYER:
+        #     for e in len(visual_features):
+        #         visual_features[e] = 
+        #     embedding = visual_features
+        #     visual_features = self.tunable_linear_visual.weight[:visual_features.size(1), :].unsqueeze(0) + visual_features
+        
         head_inputs_dict = self.forward_transformer(visual_features, text_dict,
                                                     batch_data_samples)
 
@@ -650,4 +660,8 @@ class GroundingDINO(DINO):
                 # for visualization
                 pred_instances.label_names = label_names
             data_sample.pred_instances = pred_instances
+        # for backdoor trigger visualization
+        for (input, data_sample) in zip(batch_inputs, batch_data_samples):
+            data_sample.img_data = np.transpose((input.cpu().numpy())*255, (1,2,0))
+            # data_sample.img_data = input
         return batch_data_samples
